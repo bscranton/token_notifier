@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -33,7 +34,15 @@ type DiscordWebhookApi struct {
 	Content string `json:"content"`
 }
 
+var noWebhookFlag bool
+
+func init() {
+	flag.BoolVar(&noWebhookFlag, "nowebhook", false, "Disable webhook notifications.")
+}
+
 func main() {
+	flag.Parse()
+
 	blzAuthAPIEndpoint := "https://oauth.battle.net/token"
 	blzTokenAPIEndpoint := "https://us.api.blizzard.com/data/wow/token/?namespace=dynamic-us"
 	blzClientID := os.Getenv("TKNT_BLIZZARD_CLIENTID")
@@ -85,7 +94,7 @@ func main() {
 	fmt.Println("Current token price: ", token.Price/10000)
 	fmt.Println("Last updated: ", time.UnixMilli(token.LastUpdatedTimestamp))
 
-	if token.Price >= notificationThreshold {
+	if token.Price >= notificationThreshold && !noWebhookFlag {
 		sendDiscordWebhook(
 			discordWebhook,
 			"WoW Tokens are above the notification threshold set at "+
@@ -164,3 +173,4 @@ func sendDiscordWebhook(webhookEndpoint string, message string) {
 	}
 	defer resp.Body.Close()
 }
+
