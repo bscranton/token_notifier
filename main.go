@@ -57,7 +57,7 @@ func main() {
 	if blzClientSecret == "" {
 		log.Fatalln("Environment variable TKNT_BLIZZARD_CLIENTSECRET is not set.")
 	}
-	if discordWebhook == "" {
+	if discordWebhook == "" && !noWebhookFlag {
 		log.Fatalln("Environment variable TKNT_DISCORD_WEBHOOK is not set.")
 	}
 	notificationThreshold, err := strconv.Atoi(notificationThresholdStr)
@@ -173,4 +173,3 @@ func sendDiscordWebhook(webhookEndpoint string, message string) {
 	}
 	defer resp.Body.Close()
 }
-
